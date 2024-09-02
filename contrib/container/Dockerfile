@@ -103,7 +103,7 @@ ENTRYPOINT ["/bin/ash", "./init.sh"]
 FROM inventree_base AS prebuild
 
 ENV PATH=/root/.local/bin:$PATH
-RUN ./install_build_packages.sh --no-cache --virtual .build-deps && \
+RUN --mount=type=cache,target=/root/.cache/pip,from=pip_cache ./install_build_packages.sh --no-cache --virtual .build-deps && \
     pip install --user --require-hashes -r base_requirements.txt --no-cache && \
     pip install --user --require-hashes -r requirements.txt --no-cache && \
     apk --purge del .build-deps
@@ -149,7 +149,7 @@ EXPOSE 5173
 # Install packages required for building python packages
 RUN ./install_build_packages.sh
 
-RUN pip install --require-hashes -r base_requirements.txt --no-cache
+RUN --mount=type=cache,target=/root/.cache/pip,from=pip_cache pip install --require-hashes -r base_requirements.txt --no-cache
 
 # Install nodejs / npm / yarn
 
